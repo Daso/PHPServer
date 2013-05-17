@@ -47,13 +47,61 @@ Route::post('/registrarse', function()
 	$usuario=Input::get('usuario');
 	$password=Input::get('password');
 	$nuevoUsuario=array("usuario"=>$usuario, "password"=>$password);
-	if(DB::table('usuarios')->where('usuario','=',$usuario)->get()){
-		echo "El usuario ya existe";
-	}else{
+	$reglas=array("usuario"=>"required|unique:usuarios,usuario|min:8", "password" => "required|min:6");
+	$mensajes=array("required"=>"El :attribute es obligatorio",
+		            "min"=>"Tiene que tener por lo menos seis caracteres", 
+		            "unique"=>"El :atribute ya existe, debe ser único");
+	$validar=Validator::make($nuevoUsuario,$reglas,$mensajes);
+	if($validar->passes()){
+		$usuario=Input::get('usuario');
+	    $password=Input::get('password');
+	    $password=Hash::make($password);
+	    $nuevoUsuario=array("usuario"=>$usuario, "password"=>$password);
 		DB::table('usuarios')->insert($nuevoUsuario);
 		return Redirect::to('/');
+
+	}else{
+
+       return Redirect::to('/registrarse')->with_input()->with_errors($validar);
 	}
+	$password=Hash::make($password);
+	$nuevoUsuario=array("usuario"=>$usuario, "password"=>$password);
+	// if(DB::table('usuarios')->where('usuario','=',$usuario)->get()){
+	// 	echo "El usuario ya existe";
+	// }else{
+	// 	DB::table('usuarios')->insert($nuevoUsuario);
+	// 	return Redirect::to('/');
+	// }
 });
+
+
+Route::post('/login', function(){
+  $usuario = Input::get('usuario');
+  $password = Input::get ('pass');
+  $datos = array("username"=>$usuario, "password"=>$password);
+  if(Auth::attempt($datos))
+  {
+
+  	return Redirect::to('foro');
+  }else {
+  	return Redirect::to('/')-with('errorLogin', true);
+  }
+
+});
+
+Route::get('/login', function()
+{
+	return View::make('home.index');
+});
+
+
+Route::group(array("before"=>"auth"), function(){
+	Route::get('/foro', function(){
+		$temas=Tema::all(array("id","tema","created_at"));
+		return View::make('foro.index')->with("temas", $temas);
+	});
+});
+
 /*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers

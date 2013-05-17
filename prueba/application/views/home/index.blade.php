@@ -19,10 +19,15 @@
 		</header>
 		<section id="login">
           <form action="/login" method="post">
+          	@if(Session::has('errorLogin'))
+          		<p>El usuario o contraseña no son válidos</p>
+
+            @endif
             <input type="text" name="usuario" id="usuario" placeholder="Nombre de Usuario" />
             <br />
             <input type="password" name="pass" id="pass" placeholder="Contraseña" />
-
+            
+            <input type="submit" value="Entrar" />
           </form>
 		</section>
 		<section id="registrarse">
