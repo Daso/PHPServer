@@ -97,8 +97,47 @@ Route::get('/login', function()
 
 Route::group(array("before"=>"auth"), function(){
 	Route::get('/foro', function(){
+		$usuario = Auth::user();
 		$temas=Tema::all(array("id","tema","created_at"));
-		return View::make('foro.index')->with("temas", $temas);
+		return View::make('foro.index')->with("temas", $temas)->with("usuario", $usuario);
+	});
+
+	Route::post('/enviar-tema', function(){
+      $usuario_id=Input::get('usuario');
+      $tema=Input::get('titulo');
+      $texto=Input::get('texto');
+      $url=Input::get('url');
+      $nuevoTema=array("tema"=>$tema, "texto"=>$texto, "url"=>$url);
+      Usuario::find($usuario_id)->temas()->insert($nuevoTema);
+      return Redirect::to('/foro');
+	});
+
+	Route::get('/foro/tema/(:any)', function($url){
+       $usuario=Auth::user();
+       $tema=Tema::where("url","=",$url)->first();
+       return View::make("foro.tema")->with('tema',$tema)->with('usuario', $usuario);
+
+
+	});
+
+
+
+	Route::post('/enviar-respuesta', function(){
+      $usuario_id=Input::get('usuario');
+      $tema=Input::get('tema');
+      $texto=Input::get('texto');      
+      $nuevaRespuesta=array("texto"=>$texto, "tema_id"=>$tema);
+      Usuario::find($usuario_id)->respuestas()->insert($nuevaRespuesta);
+      return Redirect::to('/foro');
+	});
+
+	Route::get('/perfil/(:any)', function($perfil){
+		$perfilUsuario=Usuario::where('usuario','=', $perfil)->first();
+		$usuario=Auth::user();
+		$temas=Usuario::where('usuario','=', $perfil)->first()->temas()->order_by('created_at','desc')->take(3)->get();
+      return View::make("foro.perfil")->with('perfil', $perfilUsuario)->with('usuario', $usuario)->with('temas',$temas);
+
+
 	});
 });
 

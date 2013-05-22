@@ -14,7 +14,8 @@ class Temas {
 			$tabla->string('tema', 200);
 			$tabla->text('texto');
 			$tabla->timestamps();
-			$tabla->integer('usuario');
+			$tabla->string('url', 200);
+			$tabla->integer('usuario_id');
 
 		});
 	}

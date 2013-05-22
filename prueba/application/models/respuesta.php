@@ -1,8 +1,8 @@
 <?php
 
- class Tema extends Eloquent{
+ class Respuesta extends Eloquent{
 
- 	public static $table="temas";
+ 	public static $table="respuestas";
 
  	function get_created_at(){
  		$fecha=$this->get_attribute("created_at");
@@ -16,8 +16,8 @@
 
  	}
 
- 	public function respuestas(){
-      return $this->has_many('Respuesta');
+ 	public function tema(){
+ 		return $this->belongs_to('Tema');
 
  	}
  }

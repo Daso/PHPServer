@@ -12,17 +12,24 @@
 	
 		<header id="inicio">
 			<h1>Foro</h1>
-			<h2>Desarrollado con Laravel</h2>
+			<h2>Bienvenido {{$usuario->usuario}}</h2>
 		</header>
 
 		<section id="nuevotema">
-			Form
+	      <form action="/enviar-tema" method="post">
+            <input type="text" id="titulo" name="titulo" placeholder="Título"><br />
+            <input type="text" id="url" name="url"><br />
+            <input type="hidden" id="usuario" name="usuario" value="{{$usuario->id}}"><br />
+            <textarea id="texto" name="texto" placeholder="Texto"></textarea><br />
+            <input type="submit">
+
+	      </form>
 		</section>
 		<section id="temas">
 			@if($temas)
 			  @foreach($temas as $tema)
 					 <section id="tema">
-		            <p>{{$tema->tema}}</p> 
+		            <p><a href="/foro/tema/{{$tema->url}}" title="{{$tema->tema}}"> {{$tema->tema}}</a></p> 
 		            <span>Creado {{$tema->created_at}}</span>
 				  </section>
 		  @endforeach
